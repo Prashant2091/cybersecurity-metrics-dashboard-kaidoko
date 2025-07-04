@@ -1,9 +1,13 @@
 
 import streamlit as st
-import plotly.graph_objects as go
+import plotly.express as px
+import pandas as pd
 from PIL import Image
+from st_aggrid import AgGrid, GridOptionsBuilder
 
-# Data
+st.set_page_config(page_title="🔐 Cybersecurity Metrics Dashboard", layout="wide")
+
+# --- DATA SETUP ---
 labels = ['Normal Users', 'Malicious Users']
 metrics = {
     'F1-Score': [93.68, 92.40],
@@ -13,71 +17,63 @@ metrics = {
 }
 colors = ['#2563eb', '#fb923c']
 
-st.set_page_config(page_title="Binary Classification Insights", layout="wide")
-st.title("📊 Binary Classification: Interactive Performance & Insights")
+# Load PNGs (visualizations)
+image1 = "Final_Clear_Binary_Classification_Labels.png"
+image2 = "final_explicit_feature_importance.png"
 
-tab1, tab2 = st.tabs(["📈 Model Performance", "🧠 Feature Importance"])
+# --- SIDEBAR CONTROLS ---
+st.sidebar.header("🔧 Control Panel")
+story_mode = st.sidebar.radio("Select Metric Story:", list(metrics.keys()))
+simulate = st.sidebar.checkbox("🔄 Simulate Malicious Score")
 
-# Tab 1: Metrics
+if simulate:
+    adjusted_val = st.sidebar.slider("Adjust Malicious Score", 85.0, 100.0, value=metrics[story_mode][1], step=0.1)
+    story_values = [metrics[story_mode][0], adjusted_val]
+else:
+    story_values = metrics[story_mode]
+
+# --- HEADER ---
+st.title("🔐 Cybersecurity Classification Dashboard")
+st.markdown("Real-time comparative insights across classification metrics and cybersecurity features.")
+
+tab1, tab2 = st.tabs(["📊 Metric Explorer", "🧠 Feature Importance Explorer"])
+
+# --- TAB 1: METRIC EXPLORER ---
 with tab1:
-    st.header("Class-wise Performance Comparison")
-    metric_selected = st.selectbox("Choose a Metric to Compare:", list(metrics.keys()))
-    simulate = st.checkbox("Simulate Malicious Class Score")
+    st.subheader(f"📈 {story_mode} Comparison")
+    df = pd.DataFrame({'Class': labels, 'Score': story_values})
 
-    if simulate:
-        malicious_val = st.slider("Adjust Malicious Score:", 85.0, 100.0,
-                                  value=metrics[metric_selected][1], step=0.1)
-        values = [metrics[metric_selected][0], malicious_val]
-    else:
-        values = metrics[metric_selected]
-
-    # Plot
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=labels,
-        y=values,
-        marker_color=colors,
-        text=[f"{v:.2f}%" for v in values],
-        textposition='outside',
-        name=metric_selected
-    ))
-    fig.update_layout(
-        title=f"{metric_selected} Comparison (Normal vs Malicious)",
-        yaxis=dict(title='Score (%)', range=[85, 100], tickformat=".0f"),
-        xaxis=dict(title='Class'),
-        bargap=0.4,
-        plot_bgcolor='white',
-        font=dict(size=14),
-        margin=dict(l=40, r=30, t=60, b=40)
-    )
+    fig = px.bar(df, x='Class', y='Score', color='Class',
+                 text=[f"{v:.2f}%" for v in story_values],
+                 color_discrete_sequence=colors)
+    fig.update_layout(yaxis_range=[85, 100], yaxis_title='Score (%)', xaxis_title=None,
+                      font=dict(size=14), plot_bgcolor='white')
     st.plotly_chart(fig, use_container_width=True)
 
-    gap = abs(values[0] - values[1])
-    diff_class = labels[0] if values[0] > values[1] else labels[1]
-    comment = "Minimal performance variation." if gap < 1 else f"**{diff_class} is stronger by {gap:.2f}%**"
+    gap = abs(story_values[0] - story_values[1])
+    better = labels[0] if story_values[0] > story_values[1] else labels[1]
+    if gap < 1:
+        msg = "🔍 Very tight performance. No significant lead."
+    else:
+        msg = f"📌 **{better}** is ahead by **{gap:.2f}%** on **{story_mode}**."
 
-    st.markdown(f"### 🧾 Interpretation")
-    st.markdown(f"""
-    - **Metric:** {metric_selected}  
-    - **Difference:** {gap:.2f}% between classes  
-    - **Insight:** {comment}
-    """)
+    st.markdown("### 📌 Insight")
+    st.info(msg)
 
-    # Static image preview
-    st.markdown("### 🖼️ Overall Visual Summary")
-    image = Image.open("Final_Clear_Binary_Classification_Labels.png")
-    st.image(image, use_column_width=True, caption="Detailed Multi-Metric Visualization")
+    st.markdown("### 🖼️ Snapshot Summary")
+    st.image(image1, use_column_width=True)
 
-# Tab 2: Feature Importance
+# --- TAB 2: FEATURE IMPORTANCE EXPLORER ---
 with tab2:
-    st.header("Cybersecurity Threat Feature Importance")
-    st.markdown("The table below summarizes which features are most influential in threat prediction.")
-    image = Image.open("final_explicit_feature_importance.png")
-    st.image(image, use_column_width=True, caption="Comprehensive Feature Importance Table")
+    st.subheader("🧠 Feature Importance Table")
 
+    # Display PNG image
+    st.image(image2, use_column_width=True)
+
+    st.markdown("### 📘 Explanation:")
     st.markdown("""
-    ### 🔍 Legend Highlights
-    - **Color-coded scores**: Importance, contribution, and impact
-    - **Business relevance** and **feature origin** are clearly mapped
-    - Designed for cybersecurity applications with real-world mapping
+    - **Importance Score**: Feature's predictive value
+    - **Contribution %**: Relative weight in model
+    - **Impact Level**: High, Moderate, or Low  
+    - **Business Relevance**: How it affects cybersecurity decision-making
     """)
