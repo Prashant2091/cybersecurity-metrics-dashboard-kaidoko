@@ -9,34 +9,26 @@ st.title("📌 Feature Importance Table (Cybersecurity Model)")
 # Load enhanced feature table
 df = pd.read_csv("feature_importance_table_for_streamlit.csv")
 
-# Define JS code for cell color rendering
+# JS code for tag-style color rendering
 impact_renderer = JsCode("""
 function(params) {
-    if (params.value == 'High') {
-        return '<span style="color: white; background-color: #ff4d4f; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    } else if (params.value == 'Moderate') {
-        return '<span style="color: black; background-color: #faad14; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    } else {
-        return '<span style="color: white; background-color: #52c41a; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    }
+    const impact = params.value;
+    let color = impact === 'High' ? '#ff4d4f' : impact === 'Moderate' ? '#faad14' : '#52c41a';
+    let text = '<span style="color: white; background-color: ' + color + '; padding: 4px 8px; border-radius: 6px;">' + impact + '</span>';
+    return text;
 }
 """)
 
 relevance_renderer = JsCode("""
 function(params) {
-    if (params.value == 'Very High') {
-        return '<span style="color: white; background-color: #722ed1; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    } else if (params.value == 'High') {
-        return '<span style="color: white; background-color: #1890ff; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    } else if (params.value == 'Moderate') {
-        return '<span style="color: black; background-color: #13c2c2; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    } else {
-        return '<span style="color: black; background-color: #d9d9d9; padding: 4px; border-radius: 4px;">' + params.value + '</span>'
-    }
+    const rel = params.value;
+    let color = rel === 'Very High' ? '#722ed1' : rel === 'High' ? '#1890ff' : rel === 'Moderate' ? '#13c2c2' : '#d9d9d9';
+    let text = '<span style="color: white; background-color: ' + color + '; padding: 4px 8px; border-radius: 6px;">' + rel + '</span>';
+    return text;
 }
 """)
 
-# Setup AgGrid
+# AgGrid config
 gb = GridOptionsBuilder.from_dataframe(df)
 gb.configure_default_column(filter=True, sortable=True, resizable=True)
 gb.configure_column("Impact Level", cellRenderer=impact_renderer)
@@ -46,4 +38,4 @@ gb.configure_column("Importance Score", type=["numericColumn"], cellStyle={'back
 grid_options = gb.build()
 
 st.markdown("Use filters and sorting to analyze how each feature contributes to threat detection.")
-AgGrid(df, gridOptions=grid_options, enable_enterprise_modules=False, theme='alpine', fit_columns_on_grid_load=True, height=550)
+AgGrid(df, gridOptions=grid_options, enable_enterprise_modules=False, theme='alpine', fit_columns_on_grid_load=True, height=580)
