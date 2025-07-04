@@ -1,0 +1,31 @@
+Feature,Importance Score,Percentage Contribution (%),Category,Impact Level,Recommended Actions,Data Source,Business Relevance,Feature Origin,Impact Level Color,Business Relevance Color
+ip_bad_rep,4.2,19.88636363636364,IP Reputation,High,Immediate IP blocking,Threat Intelligence DB,Very High,External,#ff4d4f,#722ed1
+combined_rare_suspicious_ua,3.8,17.992424242424242,User-Agent Analysis,High,Investigate user-agent behavior,Behavioral Analytics,Very High,Internal,#ff4d4f,#722ed1
+malicious_lolbin_ua,2.7,12.784090909090912,User-Agent Analysis,High,Flag suspicious software,Security Logs,High,Internal,#ff4d4f,#1890ff
+domain_freq,1.5,7.102272727272728,Domain Analysis,Moderate,Monitor domain access,Domain Frequency Analysis,High,External,#faad14,#1890ff
+rare_suspicious_activity,1.2,5.681818181818183,User Activity,Moderate,Review unusual activities,Anomaly Detection,High,Internal,#faad14,#1890ff
+domain_cat_Rare Domain,1.0,4.734848484848485,Domain Analysis,Moderate,Review rare domains accessed,Domain Registry,High,External,#faad14,#1890ff
+ip_request_deviation,0.9,4.261363636363637,IP Behavior,Moderate,Monitor unusual IP requests,Statistical Analysis,Moderate,Internal,#faad14,#13c2c2
+suspicious_url,0.7,3.31439393939394,URL Analysis,Moderate,Check URL access patterns,URL Filtering,Moderate,Internal,#faad14,#13c2c2
+ip_freq_enc,0.6,2.8409090909090917,IP Behavior,Moderate,Track IP request frequency,Frequency Encoding,Moderate,Internal,#faad14,#13c2c2
+odd_hour_lolbin_ua,0.5,2.3674242424242427,User-Agent Analysis,Moderate,Review odd-time UA behaviors,User-Agent Behavioral Logs,Moderate,Internal,#faad14,#13c2c2
+first_cloud_use,0.5,2.3674242424242427,Cloud Interaction,Moderate,Check initial cloud access,Cloud Access Logs,Moderate,Internal,#faad14,#13c2c2
+avg_bytes_per_hour_bin,0.4,1.8939393939393945,Data Transfer,Low,Monitor data transfer rate,Traffic Monitoring,Moderate,Internal,#52c41a,#13c2c2
+user_activity_freq_bin,0.35,1.65719696969697,User Activity,Low,Regular activity checks,User Activity Logs,Moderate,Internal,#52c41a,#13c2c2
+is_weekend,0.35,1.65719696969697,Time-based Feature,Low,Observe weekend patterns,Calendar Analysis,Moderate,Internal,#52c41a,#13c2c2
+hour_of_day_bin,0.3,1.4204545454545456,Time-based Feature,Low,Monitor activity by hour,Hourly Monitoring,Moderate,Internal,#52c41a,#13c2c2
+critical_events,0.3,1.4204545454545456,Critical Events,Low,Respond to critical events,Security Event Logs,Moderate,Internal,#52c41a,#13c2c2
+high_bytes_out,0.25,1.183712121212121,Data Transfer,Low,Monitor large data transfers,Data Volume Monitoring,Moderate,Internal,#52c41a,#13c2c2
+ip_request_freq_bin,0.25,1.183712121212121,IP Behavior,Low,Check frequency of IP requests,IP Frequency Logs,Moderate,Internal,#52c41a,#13c2c2
+interaction_ip_geo,0.2,0.9469696969696972,Interaction Features,Low,Examine IP-Geolocation patterns,Geolocation/IP Mapping,Moderate,Internal,#52c41a,#13c2c2
+interaction_ua_odd_hours,0.2,0.9469696969696972,Interaction Features,Low,Check User-Agent odd hours,Odd Hour Analysis,Moderate,Internal,#52c41a,#13c2c2
+day_of_week_bin,0.15,0.7102272727272728,Time-based Feature,Low,Monitor weekly patterns,Weekly Patterns Analysis,Low,Internal,#52c41a,#d9d9d9
+peak_hour,0.15,0.7102272727272728,Time-based Feature,Low,Observe activity at peak hours,Peak Traffic Logs,Low,Internal,#52c41a,#d9d9d9
+burst_activity,0.12,0.5681818181818182,Activity Patterns,Low,Check for burst-like activities,Burst Detection System,Low,Internal,#52c41a,#d9d9d9
+rare_user_agent,0.1,0.4734848484848485,User-Agent Analysis,Low,Observe rare user-agent,User-Agent Monitoring,Low,Internal,#52c41a,#d9d9d9
+requests_per_ip_hour,0.1,0.4734848484848485,IP Behavior,Low,Track requests per IP hourly,IP Traffic Analysis,Low,Internal,#52c41a,#d9d9d9
+ua_activity_10min,0.08,0.3787878787878788,User-Agent Analysis,Low,Monitor short-duration UA activity,Short-Term Logs,Low,Internal,#52c41a,#d9d9d9
+odd_hours,0.07,0.331439393939394,Time-based Feature,Low,Check odd-hour requests,Temporal Analysis,Low,Internal,#52c41a,#d9d9d9
+ip_geo_malicious_interaction,0.06,0.2840909090909091,Interaction Features,Low,Review IP-geolocation interactions,Geo-IP Interactions,Low,Internal,#52c41a,#d9d9d9
+suspicious_geo,0.05,0.2367424242424242,Geolocation,Low,Check suspicious geolocations,Geolocation Database,Low,External,#52c41a,#d9d9d9
+extreme_ip_request_spike,0.04,0.1893939393939394,IP Behavior,Low,Monitor spikes in requests,Real-Time Traffic Monitoring,Low,Internal,#52c41a,#d9d9d9
