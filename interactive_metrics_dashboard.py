@@ -1,79 +1,78 @@
 
 import streamlit as st
-import plotly.express as px
 import pandas as pd
-from PIL import Image
-from st_aggrid import AgGrid, GridOptionsBuilder
+import plotly.graph_objects as go
 
-st.set_page_config(page_title="🔐 Cybersecurity Metrics Dashboard", layout="wide")
+# Setup
+st.set_page_config(page_title="Cybersecurity Live Metrics", layout="wide")
 
-# --- DATA SETUP ---
-labels = ['Normal Users', 'Malicious Users']
-metrics = {
-    'F1-Score': [93.68, 92.40],
-    'Precision': [91.55, 95.06],
-    'Recall': [95.92, 89.88],
-    'Accuracy': [94.2, 93.1]
+# Sample data
+labels = ["Normal Users", "Malicious Users"]
+metric_values = {
+    "F1-Score": [93.68, 92.40],
+    "Precision": [91.55, 95.06],
+    "Recall": [95.92, 89.88],
+    "Accuracy": [94.2, 93.1]
 }
-colors = ['#2563eb', '#fb923c']
+colors = ["#2563eb", "#fb923c"]
 
-# Load PNGs (visualizations)
-image1 = "Final_Clear_Binary_Classification_Labels.png"
-image2 = "final_explicit_feature_importance.png"
+# Sidebar - Metric Selector
+st.sidebar.header("🔧 Select & Simulate")
+selected_metric = st.sidebar.radio("Select Metric", list(metric_values.keys()))
 
-# --- SIDEBAR CONTROLS ---
-st.sidebar.header("🔧 Control Panel")
-story_mode = st.sidebar.radio("Select Metric Story:", list(metrics.keys()))
-simulate = st.sidebar.checkbox("🔄 Simulate Malicious Score")
-
+simulate = st.sidebar.checkbox("Adjust Malicious Score")
 if simulate:
-    adjusted_val = st.sidebar.slider("Adjust Malicious Score", 85.0, 100.0, value=metrics[story_mode][1], step=0.1)
-    story_values = [metrics[story_mode][0], adjusted_val]
+    new_val = st.sidebar.slider("New Malicious Score", 85.0, 100.0, metric_values[selected_metric][1], 0.1)
+    values = [metric_values[selected_metric][0], new_val]
 else:
-    story_values = metrics[story_mode]
+    values = metric_values[selected_metric]
 
-# --- HEADER ---
-st.title("🔐 Cybersecurity Classification Dashboard")
-st.markdown("Real-time comparative insights across classification metrics and cybersecurity features.")
+# Live Metric Comparison Chart
+st.title("🧠 Cybersecurity Metrics: Real-Time Comparison")
+st.markdown("This live dashboard compares model performance across Normal vs Malicious user classes.")
 
-tab1, tab2 = st.tabs(["📊 Metric Explorer", "🧠 Feature Importance Explorer"])
+fig = go.Figure()
+fig.add_trace(go.Bar(
+    x=labels,
+    y=values,
+    marker_color=colors,
+    text=[f"{v:.2f}%" for v in values],
+    textposition="outside"
+))
+fig.update_layout(
+    title=f"{selected_metric} Comparison",
+    yaxis=dict(title="Score (%)", range=[85, 100]),
+    xaxis=dict(title="User Type"),
+    margin=dict(l=40, r=30, t=60, b=40),
+    plot_bgcolor="white",
+    font=dict(size=14)
+)
 
-# --- TAB 1: METRIC EXPLORER ---
-with tab1:
-    st.subheader(f"📈 {story_mode} Comparison")
-    df = pd.DataFrame({'Class': labels, 'Score': story_values})
+st.plotly_chart(fig, use_container_width=True)
 
-    fig = px.bar(df, x='Class', y='Score', color='Class',
-                 text=[f"{v:.2f}%" for v in story_values],
-                 color_discrete_sequence=colors)
-    fig.update_layout(yaxis_range=[85, 100], yaxis_title='Score (%)', xaxis_title=None,
-                      font=dict(size=14), plot_bgcolor='white')
-    st.plotly_chart(fig, use_container_width=True)
+# Dynamic Gap Interpretation
+gap = round(abs(values[0] - values[1]), 2)
+leading = labels[0] if values[0] > values[1] else labels[1]
+if gap < 0.5:
+    status = "🟢 Balanced — Minimal performance gap"
+elif gap < 2:
+    status = f"🟡 Mild difference — {leading} leads by {gap:.2f}%"
+else:
+    status = f"🔴 Significant gap — {leading} dominates by {gap:.2f}%"
 
-    gap = abs(story_values[0] - story_values[1])
-    better = labels[0] if story_values[0] > story_values[1] else labels[1]
-    if gap < 1:
-        msg = "🔍 Very tight performance. No significant lead."
-    else:
-        msg = f"📌 **{better}** is ahead by **{gap:.2f}%** on **{story_mode}**."
+st.subheader("📊 Interpretation")
+st.success(status)
 
-    st.markdown("### 📌 Insight")
-    st.info(msg)
+# Interactive Feature Simulation (Real-Time Table)
+st.subheader("📌 Simulated Feature Table (Live Interaction)")
+df = pd.DataFrame({
+    "Feature": ["ip_bad_rep", "geo_suspicion", "user_agent_lolbin", "domain_freq"],
+    "Importance": [0.87, 0.76, 0.52, 0.34],
+    "Category": ["IP", "Geo", "UA", "Domain"],
+    "Source": ["Threat DB", "GeoIP", "Header", "Parsed Domain"]
+})
+df["Impact (%)"] = df["Importance"].apply(lambda x: round(x * 100, 1))
 
-    st.markdown("### 🖼️ Snapshot Summary")
-    st.image(image1, use_column_width=True)
-
-# --- TAB 2: FEATURE IMPORTANCE EXPLORER ---
-with tab2:
-    st.subheader("🧠 Feature Importance Table")
-
-    # Display PNG image
-    st.image(image2, use_column_width=True)
-
-    st.markdown("### 📘 Explanation:")
-    st.markdown("""
-    - **Importance Score**: Feature's predictive value
-    - **Contribution %**: Relative weight in model
-    - **Impact Level**: High, Moderate, or Low  
-    - **Business Relevance**: How it affects cybersecurity decision-making
-    """)
+# Display interactive table with sort + style
+styled_df = df.sort_values(by="Importance", ascending=False).style.background_gradient(subset=["Impact (%)"], cmap="Blues")
+st.dataframe(styled_df, use_container_width=True)
